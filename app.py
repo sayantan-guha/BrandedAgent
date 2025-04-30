@@ -1,11 +1,11 @@
 
 import streamlit as st
-from openai import OpenAI
+import openai
 import docx
 from docx import Document
 import io
 
-st.title("🧠 AI Branded Content Integration Agent (Debug Mode)")
+st.title("🧠 AI Branded Content Integration Agent (OpenRouter Edition)")
 
 st.markdown("### Step 1: Enter Brand Brief")
 brand = st.text_input("Brand")
@@ -16,16 +16,19 @@ communication = st.text_area("Communication (e.g. Tastes like home)")
 st.markdown("### Step 2: Upload Show Concept `.docx` Files")
 uploaded_files = st.file_uploader("Upload one or more `.docx` files", type="docx", accept_multiple_files=True)
 
-openai_api_key = st.text_input("Enter your OpenAI API Key", type="password")
+openai_api_key = st.text_input("Enter your OpenRouter API Key", type="password")
 
 if st.button("Generate Proposal"):
     st.write("✅ Button clicked!")
-    
+
     if not all([brand, product, integration_type, communication, uploaded_files, openai_api_key]):
         st.error("❌ Please fill out all fields and upload at least one file.")
     else:
         st.write("✅ All inputs valid")
-        client = OpenAI(api_key=openai_api_key)
+
+        openai.api_key = openai_api_key
+        openai.api_base = "https://openrouter.ai/api/v1"
+
         shows = []
 
         for file in uploaded_files:
@@ -70,14 +73,14 @@ Then two sections:
 1. Active Integration Scene
 2. Passive Integration Scene"""
 
-            st.write("📨 Sending to OpenAI...")
+            st.write("📨 Sending to OpenRouter.ai...")
             try:
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
+                response = openai.ChatCompletion.create(
+                    model="mistralai/mistral-7b-instruct",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.8
                 )
-                st.write("✅ Got response from OpenAI")
+                st.write("✅ Got response from OpenRouter.ai")
 
                 result_text = response.choices[0].message.content
 
@@ -97,4 +100,4 @@ Then two sections:
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
             except Exception as e:
-                st.error(f"❌ OpenAI Error: {e}")
+                st.error(f"❌ OpenRouter Error: {e}")
