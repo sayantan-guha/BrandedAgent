@@ -1,9 +1,8 @@
 import streamlit as st
+from openai import OpenAI
 import docx
-import openai
 from docx import Document
 import io
-from openai import OpenAI
 
 st.title("🧠 AI Branded Content Integration Agent")
 
@@ -22,7 +21,7 @@ if st.button("Generate Proposal"):
     if not all([brand, product, integration_type, communication, uploaded_files, openai_api_key]):
         st.error("Please fill out all fields and upload at least one file.")
     else:
-        openai.api_key = openai_api_key
+        client = OpenAI(api_key=openai_api_key)
 
         shows = []
 
@@ -58,34 +57,4 @@ Communication: {communication}
 
 Suggest one cinematic **Active Integration Scene** and one **Passive Integration Scene** for the show. 
 Make sure the active scene aligns with the brand communication emotionally. 
-Write both scenes in a screenplay-like tone (200-300 words each).
-
-Start with a title like:
-"Show: {show['Show Name']}"
-Then two sections:
-1. Active Integration Scene
-2. Passive Integration Scene
-"""
-client = openai.OpenAI(api_key=openai_api_key)
-
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0.8
-)
-
-result_text = response.choices[0].message.content
-            proposal_doc.add_paragraph(result_text)
-            proposal_doc.add_paragraph("\n" + "-" * 50 + "\n")
-
-        output_stream = io.BytesIO()
-        proposal_doc.save(output_stream)
-        output_stream.seek(0)
-
-        st.success("Proposal generated!")
-        st.download_button(
-            label="📥 Download Proposal",
-            data=output_stream,
-            file_name=f"{brand}_integration_proposal.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        )
+Write both scenes in a screenplay-like tone (20
