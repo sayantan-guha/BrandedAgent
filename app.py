@@ -1,21 +1,23 @@
-
 import streamlit as st
-import openai
+from openai import OpenAI
 import docx
 from docx import Document
 import io
 
 st.title("🧠 AI Branded Content Integration Agent (OpenRouter Edition)")
 
+# Step 1: Brand Brief Input
 st.markdown("### Step 1: Enter Brand Brief")
 brand = st.text_input("Brand")
 product = st.text_input("Product")
 integration_type = st.radio("Type of Product Integrations Needed", ["1 Active and 1 Passive", "Only Passive", "Only Active"])
 communication = st.text_area("Communication (e.g. Tastes like home)")
 
+# Step 2: Upload .docx Show Concept Files
 st.markdown("### Step 2: Upload Show Concept `.docx` Files")
 uploaded_files = st.file_uploader("Upload one or more `.docx` files", type="docx", accept_multiple_files=True)
 
+# Step 3: API Key for OpenRouter
 openai_api_key = st.text_input("Enter your OpenRouter API Key", type="password")
 
 if st.button("Generate Proposal"):
@@ -26,8 +28,11 @@ if st.button("Generate Proposal"):
     else:
         st.write("✅ All inputs valid")
 
-        openai.api_key = openai_api_key
-        openai.api_base = "https://openrouter.ai/api/v1"
+        # Set up OpenRouter client using OpenAI v1 format
+        client = OpenAI(
+            api_key=openai_api_key,
+            base_url="https://openrouter.ai/api/v1"
+        )
 
         shows = []
 
@@ -51,7 +56,8 @@ if st.button("Generate Proposal"):
             st.error("⚠️ No shows parsed from the documents. Please check file format.")
         else:
             show = shows[0]
-            prompt = f"""You are a creative screenwriter. Given this show:
+            prompt = f"""
+You are a creative screenwriter. Given this show:
 
 Show Name: {show['Show Name']}
 Themes: {show['Themes']}
@@ -71,16 +77,17 @@ Start with a title like:
 "Show: {show['Show Name']}"
 Then two sections:
 1. Active Integration Scene
-2. Passive Integration Scene"""
+2. Passive Integration Scene
+"""
 
-            st.write("📨 Sending to OpenRouter.ai...")
+            st.write("📨 Sending to OpenRouter...")
             try:
-                response = openai.ChatCompletion.create(
+                response = client.chat.completions.create(
                     model="mistralai/mistral-7b-instruct",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.8
                 )
-                st.write("✅ Got response from OpenRouter.ai")
+                st.write("✅ Got response from OpenRouter")
 
                 result_text = response.choices[0].message.content
 
