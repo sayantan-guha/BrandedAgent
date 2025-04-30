@@ -42,7 +42,7 @@ if st.button("Generate Proposal"):
         proposal_doc.add_heading(f'Branded Integration Proposal for {brand}', 0)
 
         for show in shows:
-            prompt = f"""
+           prompt = f"""
 You are a creative screenwriter. Given this show:
 
 Show Name: {show['Show Name']}
@@ -57,4 +57,11 @@ Communication: {communication}
 
 Suggest one cinematic **Active Integration Scene** and one **Passive Integration Scene** for the show. 
 Make sure the active scene aligns with the brand communication emotionally. 
-Write both scenes in a screenplay-like tone (20
+Write both scenes in a screenplay-like tone (200-300 words each).
+
+Start with a title like:
+"Show: {show['Show Name']}"
+Then two sections:
+1. Active Integration Scene
+2. Passive Integration Scene
+"""
