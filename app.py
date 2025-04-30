@@ -3,6 +3,7 @@ import docx
 import openai
 from docx import Document
 import io
+from openai import OpenAI
 
 st.title("🧠 AI Branded Content Integration Agent")
 
@@ -65,14 +66,15 @@ Then two sections:
 1. Active Integration Scene
 2. Passive Integration Scene
 """
+client = openai.OpenAI(api_key=openai_api_key)
 
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.8
-            )
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.8
+)
 
-            result_text = response['choices'][0]['message']['content']
+result_text = response.choices[0].message.content
             proposal_doc.add_paragraph(result_text)
             proposal_doc.add_paragraph("\n" + "-" * 50 + "\n")
 
